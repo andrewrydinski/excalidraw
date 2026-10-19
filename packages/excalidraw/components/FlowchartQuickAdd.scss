@@ -1,0 +1,36 @@
+.excalidraw {
+  .flowchart-quick-add {
+    position: absolute;
+    inset: 0;
+    z-index: var(--zIndex-interactiveCanvas);
+    pointer-events: none;
+  }
+
+  .flowchart-quick-add__button {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid var(--color-primary);
+    border-radius: 50%;
+    background: var(--island-bg-color);
+    color: var(--color-primary);
+    box-shadow: 0 1px 4px #0002;
+    font: 22px/1 sans-serif;
+    cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--color-primary);
+      color: var(--island-bg-color);
+      outline: 2px solid var(--color-primary);
+      outline-offset: 3px;
+    }
+  }
+}
