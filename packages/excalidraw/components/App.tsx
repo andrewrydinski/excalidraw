@@ -384,6 +384,7 @@ import { AppCursor } from "./App.cursor";
 import { AppDrawShape } from "./App.drawshape";
 import { AppDuplicate } from "./App.duplicate";
 import { AppFlowchart } from "./App.flowchart";
+import { AppFlowchartDrag, FlowchartDragHandles } from "./FlowchartDragHandles";
 import { AppModifiers } from "./App.modifiers";
 import { AppPan } from "./App.pan";
 import { AppViewport, RIGHT_SIDEBAR_WIDTH } from "./App.viewport";
@@ -663,6 +664,7 @@ class App extends React.Component<AppProps, AppState> {
   });
   public toolDrag: AppToolDrag = new AppToolDrag(this);
   public flowchart: AppFlowchart = new AppFlowchart(this);
+  public flowchartDrag = new AppFlowchartDrag(this);
   public cursor: AppCursor = new AppCursor(this);
   public arrowText: AppArrowText = new AppArrowText(this);
   public pan: AppPan = new AppPan(this, {
@@ -2633,6 +2635,7 @@ class App extends React.Component<AppProps, AppState> {
                               elementsPendingErasure:
                                 this.elementsPendingErasure,
                               pendingFlowchartNodes:
+                                this.flowchartDrag.pendingNodes ??
                                 this.flowchart.pendingNodes,
                               theme: this.state.theme,
                               ...this.getRenderOverrideConfig(),
@@ -2709,6 +2712,7 @@ class App extends React.Component<AppProps, AppState> {
                                 border={this.props.viewportStatusFrame.border}
                               />
                             )}
+                          <FlowchartDragHandles app={this} />
                           {this.renderFrameNames()}
                           {this.isDefaultUIEnabled() &&
                             this.state.activeLockedId && (
@@ -3309,6 +3313,7 @@ class App extends React.Component<AppProps, AppState> {
     }
 
     this.flowchart.clear();
+    this.flowchartDrag.cancel();
 
     // These components install their own DOM listeners rather than going
     // through App's input handlers, so they must be explicitly unmounted.
@@ -3918,6 +3923,7 @@ class App extends React.Component<AppProps, AppState> {
     this.laserTrails.stop();
     this.drawShape.stop();
     this.toolDrag.cancel();
+    this.flowchartDrag.cancel();
     this.eraserTrail.stop();
     this.onChangeEmitter.clear();
     this.store.onStoreIncrementEmitter.clear();

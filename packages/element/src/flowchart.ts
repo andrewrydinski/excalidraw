@@ -276,6 +276,7 @@ export const addNewNodes = (
   scene: Scene,
   numberOfNodes: number,
   stickyCrossStart: number | null = null,
+  targetPosition?: { x: number; y: number },
 ) => {
   const elementsMap = scene.getNonDeletedElementsMap();
   const obstacles = getConnectedFlowchartNodes(startNode, elementsMap).map(
@@ -292,6 +293,38 @@ export const addNewNodes = (
 
   const nodes: NonDeletedExcalidrawElement[] = [];
   for (const position of positions) {
+    // Pointer creation shares keyboard creation's minimum spacing and bindings,
+    // but lets the user place one successor farther away or off-axis.
+    if (targetPosition && numberOfNodes === 1) {
+      const vertical = direction === "up" || direction === "down";
+      const positive = direction === "right" || direction === "down";
+      const axis = vertical ? "y" : "x";
+      const cross = vertical ? "x" : "y";
+      position[cross] = targetPosition[cross];
+      position[axis] = positive
+        ? Math.max(position[axis], targetPosition[axis])
+        : Math.min(position[axis], targetPosition[axis]);
+      // Resolve collisions in the chosen direction, including unrelated nodes.
+      const obstacles = scene
+        .getNonDeletedElements()
+        .filter(isFlowchartNodeElement);
+      for (let pass = 0; pass < obstacles.length; pass++) {
+        const obstacle = obstacles.find(
+          (element) =>
+            position.x < element.x + element.width + 24 &&
+            position.x + startNode.width + 24 > element.x &&
+            position.y < element.y + element.height + 24 &&
+            position.y + startNode.height + 24 > element.y,
+        );
+        if (!obstacle) {
+          break;
+        }
+        const size = vertical ? "height" : "width";
+        position[axis] = positive
+          ? obstacle[axis] + obstacle[size] + 100
+          : obstacle[axis] - startNode[size] - 100;
+      }
+    }
     const nextNode = cloneFlowchartNode(startNode, position.x, position.y);
     const bindingArrow = createBindingArrow(
       startNode,
