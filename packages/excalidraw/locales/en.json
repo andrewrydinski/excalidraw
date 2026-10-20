@@ -1,4 +1,16 @@
 {
+  "flowchart": {
+    "addStep": "Add step",
+    "chooseDirection": "Choose next step direction",
+    "above": "Above",
+    "right": "Right",
+    "below": "Below",
+    "left": "Left",
+    "addStepUp": "Add step up",
+    "addStepRight": "Add step right",
+    "addStepDown": "Add step down",
+    "addStepLeft": "Add step left"
+  },
   "labels": {
     "signUp": "Sign up",
     "signIn": "Sign in",

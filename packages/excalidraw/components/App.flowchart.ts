@@ -50,6 +50,60 @@ export class AppFlowchart {
     this.navigator.clear();
   };
 
+  get contextualNode() {
+    const { app } = this;
+    const state = app.state;
+    if (
+      state.activeTool.type !== "selection" ||
+      state.viewModeEnabled ||
+      state.zenModeEnabled ||
+      state.editingTextElement ||
+      state.editingGroupId ||
+      state.openDialog ||
+      state.openMenu ||
+      state.contextMenu ||
+      state.isLoading ||
+      state.showHyperlinkPopup ||
+      state.newElement ||
+      state.selectionElement ||
+      state.selectedElementsAreBeingDragged ||
+      state.isResizing ||
+      state.isRotating ||
+      state.croppingElementId ||
+      this.isCreatingChart
+    ) {
+      return null;
+    }
+    const selected = getSelectedElements(
+      app.scene.getNonDeletedElementsMap(),
+      state,
+    );
+    const node = selected.length === 1 ? selected[0] : null;
+    return node &&
+      !node.locked &&
+      (node.type === "rectangle" || node.type === "diamond")
+      ? node
+      : null;
+  }
+
+  /** Pointer equivalent of one keyboard creation, using the same engine/history. */
+  addStep = (direction: LinkDirection) => {
+    const node = this.contextualNode;
+    if (!node) {
+      return;
+    }
+    this.clear();
+    this.creator.createNodes(node, this.app.state, direction, this.app.scene);
+    const nodes = this.creator.pendingNodes ?? [];
+    this.creator.clear();
+    if (nodes.length) {
+      this.app.insertNewElements(nodes);
+      this.selectAndReveal(nodes[0]);
+      this.captureUpdate();
+      this.app.focusContainer();
+    }
+  };
+
   handleKeyEvent = (event: React.KeyboardEvent | KeyboardEvent): boolean => {
     const operation = this.resolveKeyboardEventToOperation(event);
 
