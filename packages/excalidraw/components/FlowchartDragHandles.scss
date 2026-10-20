@@ -1,0 +1,55 @@
+.excalidraw {
+  .flowchart-drag-handles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: var(--zIndex-interactiveCanvas);
+  }
+
+  .flowchart-drag-handle {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--color-primary);
+    border-radius: 50%;
+    background: var(--island-bg-color);
+    color: var(--color-primary);
+    font-size: 18px;
+    line-height: 1;
+    pointer-events: auto;
+    touch-action: none;
+    cursor: grab;
+
+    &:hover,
+    &:focus-visible {
+      background: var(--color-primary);
+      color: white;
+      outline: 2px solid var(--color-primary-light);
+      outline-offset: 2px;
+    }
+  }
+
+  .flowchart-drag-hint {
+    position: absolute;
+    bottom: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--island-bg-color);
+    box-shadow: var(--shadow-island);
+    color: var(--text-primary-color);
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: auto;
+
+    button {
+      margin-left: 12px;
+      color: var(--color-primary);
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+  }
+}
