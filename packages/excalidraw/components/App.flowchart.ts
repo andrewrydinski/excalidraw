@@ -44,6 +44,57 @@ export class AppFlowchart {
     return this.creator.isCreatingChart;
   }
 
+  /** Pointer controls intentionally support only standalone flowchart shapes. */
+  get quickAddNode() {
+    const { state, scene } = this.app;
+    const selected = getSelectedElements(
+      scene.getNonDeletedElementsMap(),
+      state,
+    );
+    const node = selected[0];
+    if (
+      selected.length !== 1 ||
+      !node ||
+      (node.type !== "rectangle" && node.type !== "diamond") ||
+      node.locked ||
+      node.groupIds.length ||
+      state.activeTool.type !== "selection" ||
+      state.viewModeEnabled ||
+      state.isLoading ||
+      state.contextMenu ||
+      state.editingTextElement ||
+      state.openDialog ||
+      state.openMenu ||
+      state.newElement ||
+      state.selectionElement ||
+      state.selectedElementsAreBeingDragged ||
+      state.resizingElement ||
+      state.isRotating ||
+      state.cursorButton === "down" ||
+      this.isCreatingChart
+    ) {
+      return null;
+    }
+    return node;
+  }
+
+  addNode = (direction: LinkDirection) => {
+    const node = this.quickAddNode;
+    if (!node) {
+      return;
+    }
+    this.clear();
+    this.creator.createNodes(node, this.app.state, direction, this.app.scene);
+    const nodes = this.creator.pendingNodes ?? [];
+    this.creator.clear();
+    if (nodes.length) {
+      this.app.insertNewElements(nodes);
+      this.selectAndReveal(nodes[0]);
+      this.captureUpdate();
+    }
+    this.app.focusContainer();
+  };
+
   /** ends any in-progress flowchart creation/navigation session */
   clear = () => {
     this.creator.clear();
